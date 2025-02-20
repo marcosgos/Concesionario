@@ -1,56 +1,36 @@
 <?php
-session_start();
-$conn = mysqli_connect('localhost', 'root', '12345678', 'concesionario');
-
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+$servername = "localhost";
+$username = "root";
+$password = "12345678";
+$database = "concesionario";
+$conn = new mysqli($servername, $username, $password, $database);
+if ($conn->connect_error) {
+    die("Conexión fallida: " . $conn->connect_error);
 }
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nombre = $_POST["nombre"];
+    $apellidos = $_POST["apellidos"];
+    $email = $_POST["email"];
+    $contrasena = password_hash($_POST["contrasena"], PASSWORD_BCRYPT);
+    $tipo_usuario = $_POST["tipo_usuario"];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $password = $_POST['contrasena'];
-	$sql = "SELECT email, `password`, nombre, tipo_usuario FROM usuarios WHERE email = '$email';";
-	$result = mysqli_query($conn, $sql);
+    $sql = "INSERT INTO usuarios (password, nombre, apellidos, email, tipo_usuario) 
+            VALUES ('$contrasena', '$nombre', '$apellidos', '$email','$tipo_usuario')";
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $tipo_usuario = $row['tipo_usuario'];
-
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['loggedin'] = true;
-            $_SESSION['name'] = $row['nombre'];
-            $_SESSION['email'] = $row['email']; 
-            $_SESSION["tipo_usuario"] = $tipo_usuario;
-
-            // Redirigir según el tipo de usuario
-            if ($tipo_usuario == "admin") {
-                header("Location: Backend/index.html");
-            } elseif ($tipo_usuario == "vendedor") {
-                header("Location: Frontend/Vendedor/index.html");
-            } else {
-                header("Location: Frontend/Cliente/index.html");
-            }
-            exit();
-        } else {
-            $message = "<div style='text-align: center; color: red;'>Email o contraseña incorrecto4s!<br><b>¡Inténtalo de nuevo!</b></div>";
-        }
+    if ($conn->query($sql) === TRUE) {
+        header("Location: iniciosesion.php");
+        exit();
     } else {
-        $message = "<div style='text-align: center; color: red;'>Email o contraseña incorrectos!<br><b>¡Inténtalo de nuevo!</b></div>";
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
-
-mysqli_close($conn);
+$conn->close();
 ?>
 
 
-
-
-<!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Iniciar Sesión</title>
+<title>Concesionario</title>
 <style>
 /* Estilo general */
 body {
@@ -144,7 +124,7 @@ body {
     background: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
 	margin-top:180px;
 	margin-left:800px;
-    padding: 40px;
+    padding: 20px;
     border-radius: 10px;
     width: 300px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
@@ -162,7 +142,8 @@ body {
     margin: 10px 0 5px;
 }
 
-.form-container input {
+.form-container input,
+.form-container select {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
@@ -187,23 +168,15 @@ body {
     background-color: darkred;
 }
 
-/* Botón extra para registro */
-.form-container .register-button {
-    background-color: blue;
-    margin-top: 10px;
-}
-
-.form-container .register-button:hover {
-    background-color: darkblue;
-}
-
-
 </style>
 </head>
 <body>
+
+
 <div class="logo">
     <a href="index.html"><img src="logo.jpg" alt="Logo del concesionario"></a>
 </div>
+
 <div class="nav">
     <ul class="nav__list">
         <li>
@@ -221,22 +194,37 @@ body {
         </li>
     </ul>
 </div>
-	<div class="form-container">
-		<h2>Iniciar Sesión</h2>
-		<form action="" method="post">
-			<label for="email">Email:</label>
-			<input type="email" name="email" required><br>
+<div class="form-container">
+    <h2>Registro de Usuario</h2>
+    <form action="" method="post">
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" required><br>
 
-			<label for="contrasena">Contraseña:</label>
-			<input type="password" name="contrasena" required><br>
+        <label for="apellidos">Apellidos:</label>
+        <input type="text" name="apellidos" required><br>
 
-			<button type="submit">Iniciar Sesión</button>
-		</form>
-		<?php
-		if (isset($message)) {
-			echo $message;
-		}
-		?>
-	</div>
+        <label for="email">Email:</label>
+        <input type="email" name="email" required><br>
+
+        <label for="contrasena">Contraseña:</label>
+        <input type="password" name="contrasena" required><br>
+
+        <label for="tipo_usuario">Tipo de Usuario:</label>
+        <select name="tipo_usuario" required>
+            <option value="cliente">Cliente</option>
+			<option value="vendedor">Vendedor</option>
+            <option value="admin">Admin</option>
+        </select><br>
+
+        <button type="submit">Registrar</button>
+    </form>
+
+    <a href="iniciosesion.php">
+        <button style="background-color: blue; color: white; margin-top: 10px;">Iniciar Sesión</button>
+    </a>
+</div>
+
+
+
 </body>
 </html>
