@@ -92,99 +92,6 @@ body {
     width: 100px; /* Ajusta el tamaño del logo */
     height: auto;
 }
-
-/* Contenedor del formulario */
-.form-container {
-    background-color: rgba(255, 255, 255, 0.95); /* Fondo semitransparente */
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra suave */
-    width: 100%;
-    max-width: 400px;
-    margin: auto; /* Centrado horizontal */
-}
-
-/* Título del formulario */
-.form-container h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
-}
-
-/* Grupo de campos del formulario */
-.form-group {
-    margin-bottom: 15px;
-}
-
-/* Etiquetas de los campos */
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #333;
-    font-size: 14px;
-}
-
-/* Campos de entrada */
-input[type="text"],
-input[type="number"],
-input[type="file"],
-select {
-    width: 100%; /* Campo de ancho completo */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    color: #333;
-    box-sizing: border-box; /* Para evitar desbordes */
-}
-
-/* Espaciado entre opciones del select */
-select option {
-    padding: 5px;
-}
-
-/* Botones */
-.form-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s, opacity 0.3s;
-}
-
-/* Botón Enviar */
-button[type="submit"] {
-    background-color: #4CAF50; /* Verde */
-    color: white;
-}
-
-button[type="submit"]:hover {
-    background-color: #45a049; /* Verde más oscuro */
-}
-
-/* Botón Borrar */
-button[type="reset"] {
-    background-color: #f44336; /* Rojo */
-    color: white;
-}
-
-button[type="reset"]:hover {
-    background-color: #e53935; /* Rojo más oscuro */
-}
-
-/* Efecto hover para ambos botones */
-button:hover {
-    opacity: 0.9;
-}
 .cuenta {
     position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
     top: 15px; /* Ajusta el espacio desde la parte superior */
@@ -196,13 +103,14 @@ button:hover {
 	background-color:red;
 	border-radius:20px;
 }
+
 </style>
 </head>
 <body>
 
 <!-- Logo -->
 <div class="logo">
-    <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a><!-- Cambiar URL por el logo -->
+    <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a>
 </div>
 
 <!-- Menú superior -->
@@ -221,7 +129,7 @@ button:hover {
         <li>
             <a>Usuarios</a>
             <ul>
-                <li><a href="registrar-user.php">A&ntilde;adir</a></li>
+                <li><a href="registrar-user.html">A&ntilde;adir</a></li>
                 <li><a href="ver-user.php">Listar</a></li>
 				<li><a href="buscar-user.php">Buscar</a></li>
                 <li><a href="modificar-user.php">Modificar</a></li>
@@ -237,6 +145,7 @@ button:hover {
         </li>
     </ul>
 </div>
+
 <div class="cuenta">
     <a href="cuenta.html">
         <button class="t">
@@ -251,69 +160,6 @@ button:hover {
         </button>
     </a>
 </div>
-<div>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            
-			border-radius:10px;
-            text-align: center;
-            padding: 8px;
-			background-color: #f2f2f2;
-        }
-        th {
-            background-color: rgba(255, 0, 0, 0.8);
-        }
-    </style>
-</head>
-<body>
-    <h1>Lista de Coches</h1>
-    <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345678";
-    $dbname = "concesionario";
 
-    // Conectar a la base de datos
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
-
-    // Verificar conexión
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
-
-    // Consulta SQL
-    $sql = "select * from coches where alquilado = 1";
-    $result = mysqli_query($conn, $sql);
-
-    // Verificar si hay resultados
-    if (mysqli_num_rows($result) > 0) {
-        echo "<table>";
-        echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Alquilado</th><th>Foto</th></tr>";
-
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($row['modelo']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['marca']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['color']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['precio']) . "</td>";
-            echo "<td>" . ($row['alquilado'] ? "Sí" : "No") . "</td>";
-            echo "<td><img src='../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='100'></td>";
-            echo "</tr>";
-        }
-
-        echo "</table>";
-    } else {
-        echo "<p>No se encontraron resultados.</p>";
-    }
-
-    // Cerrar conexión
-    mysqli_close($conn);
-    ?>
 </body>
 </html>
-
-</div>

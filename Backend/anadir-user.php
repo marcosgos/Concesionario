@@ -13,21 +13,24 @@ if (!$conn) {
 // Obtener y procesar datos del usuario
 $nombre = $_REQUEST['Nombre'];
 $apellidos = $_REQUEST['Apellidos'];
+$email = $_REQUEST['Email'];
 $contraseña = $_REQUEST['Contraseña'];
-$DNI = $_REQUEST['DNI'];
-$saldo = $_REQUEST['saldo'];
+$tipo = $_REQUEST['tipo_usuario'];
+
+// Encriptar la contraseña
+$contraseña_encriptada = password_hash($contraseña, PASSWORD_BCRYPT);
 
 // Consulta SQL
-$sql = "INSERT INTO usuarios (password, nombre, apellidos, dni, saldo) 
-        VALUES ('$contraseña', '$nombre', '$apellidos', '$DNI', $saldo)";
+$sql = "INSERT INTO usuarios (password, nombre, apellidos, email, tipo_usuario) 
+        VALUES ('$contraseña_encriptada', '$nombre', '$apellidos', '$email', '$tipo')";
 
 // Verificar resultados
 if (mysqli_query($conn, $sql)) {
     echo "<h1>El usuario " . ($nombre) . " fue registrado correctamente!</h1>";
-	echo "<a href='registrar-user.html'>Insertar mas Usuarios??</a>";
+    echo "<a href='registrar-user.php'>Insertar más Usuarios??</a>";
 } else {
     echo "<h1>Error en el registro: " . mysqli_error($conn) . "</h1>";
-    echo "<a href='registrar-user.html'>Intentar de nuevo</a>";
+    echo "<a href='registrar-user.php'>Intentar de nuevo</a>";
 }
 
 // Cerrar conexión

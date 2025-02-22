@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -78,7 +81,7 @@
         }
         .form-container {
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 30px;
+            padding: 40px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 100%;
@@ -230,23 +233,32 @@ button:hover {
         font-size: 14px;
     }
 }
+.cuenta {
+    position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
+    top: 15px; /* Ajusta el espacio desde la parte superior */
+    right: 40px; /* Coloca el div en la esquina derecha */
+}
 
+.t{
+	padding:5px;
+	background-color:red;
+	border-radius:20px;
+}
     </style>
 </head>
 <body>
     <!-- Logo -->
     <div class="logo">
-        <a href="index.html"><img src="logo.jpg" alt="Logo del concesionario"></a>
+        <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a>
     </div>
 
     <!-- Menú superior -->
     <div class="nav">
     <ul class="nav__list">
         <li>
-            <a href="coches.html">Coches</a>
+            <a>Coches</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-coche.html">A&ntilde;adir</a></li>
+                <li><a href="registrar-coche.php">A&ntilde;adir</a></li>
                 <li><a href="ver-coche.php">Listar</a></li>
                 <li><a href="buscar-coche.php">Buscar</a></li>
                 <li><a href="modificar-coche.php">Modificar</a></li>
@@ -254,10 +266,9 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a href="usuarios.html">Usuarios</a>
+            <a>Usuarios</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-user.html">A&ntilde;adir</a></li>
+                <li><a href="registrar-user.php">A&ntilde;adir</a></li>
                 <li><a href="ver-user.php">Listar</a></li>
 				<li><a href="buscar-user.php">Buscar</a></li>
                 <li><a href="modificar-user.php">Modificar</a></li>
@@ -265,34 +276,45 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a href="alquileres.html">Alquileres</a>
+            <a>Alquileres</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
 				<li><a href="listar-alquileres.php">Listar</a></li>
                 <li><a href="borrar-alquileres.php">Borrar</a></li>
             </ul>
         </li>
     </ul>
 </div>
+<div class="cuenta">
+    <a href="cuenta.html">
+        <button class="t">
+            <?php 
+            if (isset($_SESSION['name'])) {
+                echo $_SESSION['name']; // Muestra el nombre de usuario si está en la sesión
+				echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesion</button></a>";
+            } else {
+                echo "Iniciar Sesión"; // Mensaje predeterminado si no hay sesión iniciada
+            }
+            ?>
+        </button>
+    </a>
+</div>
 
-    <!-- Contenedor del formulario -->
-    <div class="form-container">
+
+<div class="form-container">
     <h2>Buscar Usuarios</h2>
     <form method="POST">
         <div class="form-group">
             <label for="nombre">Nombre del usuario:</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Ingrese el nombre" >
+            <input type="text" id="nombre" name="nombre">
         </div>
         <div class="form-group">
-            <label for="dni">DNI del usuario:</label>
-            <input type="text" id="dni" name="dni" placeholder="Ingrese el DNI" >
+            <label for="apellido">Apellido del usuario:</label>
+            <input type="text" id="apellido" name="apellido">
         </div>
         <button type="submit">Buscar</button>
     </form>
 </div>
 
-<!-- Mensajes de éxito o error -->
-<div class="container">
 <?php
 $servername = "localhost";
 $username = "root";
@@ -306,53 +328,56 @@ if (!$conn) {
     die("Conexión fallida: " . mysqli_connect_error());
 }
 
-// Lógica para eliminar un usuario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['delete_dni']) && isset($_POST['delete_nombre'])) {
-        // Eliminar usuario por nombre y DNI
-        $delete_dni = mysqli_real_escape_string($conn, $_POST['delete_dni']);
+    if (isset($_POST['delete_nombre']) && isset($_POST['delete_apellido'])) {
+        // Eliminar usuario por nombre y apellido
         $delete_nombre = mysqli_real_escape_string($conn, $_POST['delete_nombre']);
+        $delete_apellido = mysqli_real_escape_string($conn, $_POST['delete_apellido']);
 
         // Crear la consulta para eliminar
-        $sql_delete = "DELETE FROM usuarios WHERE dni = '$delete_dni' AND nombre = '$delete_nombre'";
+        $sql_delete = "DELETE FROM usuarios WHERE nombre = '$delete_nombre' AND apellidos = '$delete_apellido'";
         if (mysqli_query($conn, $sql_delete)) {
-            echo "<div class='message success'>El usuario '$delete_nombre' con DNI '$delete_dni' se ha eliminado correctamente.</div>";
+            echo "<div class='message success'>El usuario '$delete_nombre $delete_apellido' se ha eliminado correctamente.</div>";
         } else {
             echo "<div class='message error'>Error al eliminar el usuario: " . mysqli_error($conn) . "</div>";
         }
-    } else {
-        // Buscar usuarios por nombre y DNI
-        $nombre = mysqli_real_escape_string($conn, $_POST['nombre']);
-        $dni = mysqli_real_escape_string($conn, $_POST['dni']);
-        $sql = "SELECT * FROM usuarios WHERE nombre LIKE '%$nombre%' AND dni LIKE '%$dni%'";
+    } else {    
+        $nombre = $_REQUEST['nombre'];
+        $apellido = $_REQUEST['apellido'];
+
+        $sql = "SELECT * FROM usuarios WHERE nombre LIKE '$nombre' AND apellidos LIKE '$apellido'";
         $result = mysqli_query($conn, $sql);
 
         if (mysqli_num_rows($result) > 0) {
-            echo "<tr><th>Nombre</th><th>Apellido</th><th>DNI</th><th>Acción</th></tr>";
-			while ($row = mysqli_fetch_assoc($result)) {
-				echo "<tr>";
-				echo "<td>" . htmlspecialchars($row['nombre']) . "</td>";
-				echo "<td>" . htmlspecialchars($row['apellido']) . "</td>";
-				echo "<td>" . htmlspecialchars($row['dni']) . "</td>";
-				echo "<td>
-						<form method='POST' style='display:inline;'>
-							<input type='hidden' name='delete_nombre' value='" . htmlspecialchars($row['nombre']) . "'>
-							<input type='hidden' name='delete_dni' value='" . htmlspecialchars($row['dni']) . "'>
-							<button type='submit'>Eliminar</button>
-						</form>
-					  </td>";
-				echo "</tr>";
+            echo "<table>";
+            echo "<tr><th>Contraseña</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Saldo</th><th>Tipo de Usuario</th><th>Acción</th></tr>";
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo "<tr>";
+                echo "<td>" . ($row['password']) . "</td>";
+                echo "<td>" . ($row['nombre']) . "</td>";
+                echo "<td>" . ($row['apellidos']) . "</td>"; // Aquí estaba el error, debería ser 'apellidos'
+                echo "<td>" . ($row['email']) . "</td>";
+                echo "<td>" . (is_null($row['saldo']) ? "0" : $row['saldo']) . "</td>";
+                echo "<td>" . ($row['tipo_usuario']) . "</td>";
+                echo "<td>
+                        <form method='POST' style='display:inline;'>
+                            <input type='hidden' name='delete_nombre' value='" . htmlspecialchars($row['nombre']) . "'>
+                            <input type='hidden' name='delete_apellido' value='" . htmlspecialchars($row['apellidos']) . "'> <!-- Aquí también estaba el error -->
+                            <button type='submit'>Eliminar</button>
+                        </form>
+                      </td>";
+                echo "</tr>";
             }
             echo "</table>";
         } else {
-            echo "<div class='message'>No se encontraron resultados para el nombre o el DNI especificados.</div>";
+            echo "<div class='message'>No se encontraron resultados para el nombre y apellido especificados.</div>";
         }
     }
 }
-
 mysqli_close($conn);
 ?>
-</div>
+
+
 
 
 </body>

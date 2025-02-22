@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -236,23 +240,32 @@ button:hover {
     }
 }
 
+		.cuenta {
+			position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
+			top: 15px; /* Ajusta el espacio desde la parte superior */
+			right: 40px; /* Coloca el div en la esquina derecha */
+		}
 
+		.t{
+			padding:5px;
+			background-color:red;
+			border-radius:20px;
+		}
     </style>
 </head>
 <body>
     <!-- Logo -->
     <div class="logo">
-        <a href="index.html"><img src="logo.jpg" alt="Logo del concesionario"></a>
+        <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a>
     </div>
 
     <!-- Menú superior -->
     <div class="nav">
     <ul class="nav__list">
         <li>
-            <a href="coches.html">Coches</a>
+            <a>Coches</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-coche.html">A&ntilde;adir</a></li>
+                <li><a href="registrar-coche.php">A&ntilde;adir</a></li>
                 <li><a href="ver-coche.php">Listar</a></li>
                 <li><a href="buscar-coche.php">Buscar</a></li>
                 <li><a href="modificar-coche.php">Modificar</a></li>
@@ -260,10 +273,9 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a href="usuarios.html">Usuarios</a>
+            <a>Usuarios</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-user.html">A&ntilde;adir</a></li>
+                <li><a href="registrar-user.php">A&ntilde;adir</a></li>
                 <li><a href="ver-user.php">Listar</a></li>
 				<li><a href="buscar-user.php">Buscar</a></li>
                 <li><a href="modificar-user.php">Modificar</a></li>
@@ -271,14 +283,28 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a href="alquileres.html">Alquileres</a>
+            <a>Alquileres</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
 				<li><a href="listar-alquileres.php">Listar</a></li>
                 <li><a href="borrar-alquileres.php">Borrar</a></li>
             </ul>
         </li>
     </ul>
+</div>
+
+<div class="cuenta">
+    <a href="cuenta.html">
+        <button class="t">
+            <?php 
+            if (isset($_SESSION['name'])) {
+                echo $_SESSION['name']; // Muestra el nombre de usuario si está en la sesión
+				echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesion</button></a>";
+            } else {
+                echo "Iniciar Sesión"; // Mensaje predeterminado si no hay sesión iniciada
+            }
+            ?>
+        </button>
+    </a>
 </div>
 
     <!-- Contenedor del formulario -->
@@ -298,7 +324,7 @@ button:hover {
 </div>
 
 <!-- Mensajes de éxito o error -->
-<div class="container">
+
 <?php
 $servername = "localhost";
 $username = "root";
@@ -334,7 +360,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = mysqli_query($conn, $sql);
 
         if (mysqli_num_rows($result) > 0) {
-            echo "<h3>Resultados de la búsqueda:</h3>";
             echo "<table>";
             echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Alquilado</th><th>Foto</th><th>Acción</th></tr>";
             while ($row = mysqli_fetch_assoc($result)) {
@@ -364,7 +389,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 mysqli_close($conn);
 ?>
-</div>
+
 
 
 </body>

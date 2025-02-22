@@ -130,6 +130,7 @@ label {
 input[type="text"],
 input[type="number"],
 input[type="file"],
+input[type="password"],
 select {
     width: 100%; /* Campo de ancho completo */
     padding: 10px;
@@ -199,13 +200,9 @@ button:hover {
 </style>
 </head>
 <body>
-
-<!-- Logo -->
 <div class="logo">
     <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a><!-- Cambiar URL por el logo -->
 </div>
-
-<!-- Menú superior -->
 <div class="nav">
     <ul class="nav__list">
         <li>
@@ -251,92 +248,45 @@ button:hover {
         </button>
     </a>
 </div>
-<div>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            
-			border-radius:10px;
-            text-align: center;
-            padding: 8px;
-			background-color: #f2f2f2;
-        }
-        th {
-            background-color: rgba(255, 0, 0, 0.8);
-        }
-    </style>
-</head>
-<body>
-    <h1>Lista de Coches</h1>
-    <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345678";
-    $dbname = "concesionario";
+    <div class="form-container">
+        <h2>Registrar Usuario</h2>
+        <form action="anadir-user.php" method="post">
 
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
+            <div class="form-group">
+                <label for="Nombre">Nombre</label>
+                <input type="text" id="Nombre" name="Nombre" required>
+            </div>
 
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
-
-    // Verificar si se ha enviado el formulario de eliminación
-    if (isset($_POST['delete_model']) && isset($_POST['delete_brand'])) {
-        $delete_model = $_POST['delete_model'];
-        $delete_brand = $_POST['delete_brand'];
-
-        // Consulta SQL para eliminar el coche de la base de datos
-        $delete_sql = "DELETE FROM coches WHERE modelo = ? AND marca = ?";
-        $stmt = mysqli_prepare($conn, $delete_sql);
-        mysqli_stmt_bind_param($stmt, 'ss', $delete_model, $delete_brand); // 'ss' son los tipos de datos (string, string)
-        
-        // Ejecutar la consulta
-        if (mysqli_stmt_execute($stmt)) {
-            echo "<p>Coche eliminado con éxito.</p>";
-        } else {
-            echo "<p>Error al eliminar el coche: " . mysqli_error($conn) . "</p>";
-        }
-        mysqli_stmt_close($stmt); // Cerrar la declaración
-    }
-
-    $sql = "SELECT * FROM coches WHERE alquilado = 1";
-    $result = mysqli_query($conn, $sql);
-
-    if (mysqli_num_rows($result) > 0) {
-        echo "<table>";
-        echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Alquilado</th><th>Foto</th><th>Acción</th></tr>";
-
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($row['modelo']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['marca']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['color']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['precio']) . "</td>";
-            echo "<td>" . ($row['alquilado'] ? "Sí" : "No") . "</td>";
-            echo "<td><img src='../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='100'></td>";
-            echo "<td>
-                    <form method='POST' style='display:inline;'>
-                    <input type='hidden' name='delete_model' value='" . htmlspecialchars($row['modelo']) . "'>
-                    <input type='hidden' name='delete_brand' value='" . htmlspecialchars($row['marca']) . "'>
-                    <button type='submit'>Eliminar</button>
-                    </form>
-                </td>";
-            echo "</tr>";
-        }
-
-        echo "</table>";
-    } else {
-        echo "<p>No se encontraron resultados.</p>";
-    }
-
-    mysqli_close($conn);
-?>
-
-
+            <div class="form-group">
+                <label for="Apellidos">Apellidos</label>
+                <input type="text" id="Apellidos" name="Apellidos" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="text" id="email" name="Email" required>
+            </div>
+            <div class="form-group">
+                <label for="Contraseña">Contrase&ntilde;a</label>
+                <input type="password" id="Contraseña" name="Contraseña" required>
+            </div>
+            <div class="form-group">
+				<label for="tipo_usuario">Tipo de Usuario:</label>
+				<select name="tipo_usuario" required>
+					<option value="cliente">Cliente</option>
+					<option value="vendedor">Vendedor</option>
+					<option value="admin">Admin</option>
+				</select><br>
+            </div>
+			
+            <div class="form-actions">
+                <button type="submit">Enviar</button>
+                <button type="reset">Borrar Todo</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
 
 </div>
+</body>
+</html>

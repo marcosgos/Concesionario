@@ -1,6 +1,7 @@
 <?php
 session_start();
 ?>
+
 <html>
 <head>
 <title>Concesionario</title>
@@ -185,6 +186,7 @@ button[type="reset"]:hover {
 button:hover {
     opacity: 0.9;
 }
+
 .cuenta {
     position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
     top: 15px; /* Ajusta el espacio desde la parte superior */
@@ -196,6 +198,7 @@ button:hover {
 	background-color:red;
 	border-radius:20px;
 }
+
 </style>
 </head>
 <body>
@@ -209,7 +212,7 @@ button:hover {
 <div class="nav">
     <ul class="nav__list">
         <li>
-            <a>Coches</a>
+            <a href="coches.html">Coches</a>
             <ul>
                 <li><a href="registrar-coche.php">A&ntilde;adir</a></li>
                 <li><a href="ver-coche.php">Listar</a></li>
@@ -219,7 +222,7 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a>Usuarios</a>
+            <a href="usuarios.html">Usuarios</a>
             <ul>
                 <li><a href="registrar-user.php">A&ntilde;adir</a></li>
                 <li><a href="ver-user.php">Listar</a></li>
@@ -229,7 +232,7 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a>Alquileres</a>
+            <a href="alquileres.html">Alquileres</a>
             <ul>
 				<li><a href="listar-alquileres.php">Listar</a></li>
                 <li><a href="borrar-alquileres.php">Borrar</a></li>
@@ -251,92 +254,56 @@ button:hover {
         </button>
     </a>
 </div>
-<div>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            
-			border-radius:10px;
-            text-align: center;
-            padding: 8px;
-			background-color: #f2f2f2;
-        }
-        th {
-            background-color: rgba(255, 0, 0, 0.8);
-        }
-    </style>
-</head>
-<body>
-    <h1>Lista de Coches</h1>
-    <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345678";
-    $dbname = "concesionario";
+    <div class="form-container">
+        <h2>Registrar Coche</h2>
+        <form action="anadir-coche.php" method="POST" enctype="multipart/form-data">
+            <!-- Modelo -->
+            <div class="form-group">
+                <label for="modelo">Modelo</label>
+                <input type="text" id="modelo" name="modelo" placeholder="Ej: Civic" required>
+            </div>
 
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
+            <!-- Marca -->
+            <div class="form-group">
+                <label for="marca">Marca</label>
+                <input type="text" id="marca" name="marca" placeholder="Ej: Honda" required>
+            </div>
 
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
+            <!-- Color -->
+            <div class="form-group">
+                <label for="color">Color</label>
+                <input type="text" id="color" name="color" placeholder="Ej: Rojo" required>
+            </div>
 
-    // Verificar si se ha enviado el formulario de eliminación
-    if (isset($_POST['delete_model']) && isset($_POST['delete_brand'])) {
-        $delete_model = $_POST['delete_model'];
-        $delete_brand = $_POST['delete_brand'];
+            <!-- Precio -->
+            <div class="form-group">
+                <label for="precio">Precio</label>
+                <input type="number" id="precio" name="precio" placeholder="Ej: 15000" min="0" required>
+            </div>
 
-        // Consulta SQL para eliminar el coche de la base de datos
-        $delete_sql = "DELETE FROM coches WHERE modelo = ? AND marca = ?";
-        $stmt = mysqli_prepare($conn, $delete_sql);
-        mysqli_stmt_bind_param($stmt, 'ss', $delete_model, $delete_brand); // 'ss' son los tipos de datos (string, string)
-        
-        // Ejecutar la consulta
-        if (mysqli_stmt_execute($stmt)) {
-            echo "<p>Coche eliminado con éxito.</p>";
-        } else {
-            echo "<p>Error al eliminar el coche: " . mysqli_error($conn) . "</p>";
-        }
-        mysqli_stmt_close($stmt); // Cerrar la declaración
-    }
+            <!-- ¿Está alquilado? -->
+            <div class="form-group">
+                <label>Esta alquilado?</label>
+                <input type="radio" name="alquilado" value="Si">SI
+				<input type="radio" name="alquilado" value="No">No
+            </div>
 
-    $sql = "SELECT * FROM coches WHERE alquilado = 1";
-    $result = mysqli_query($conn, $sql);
+            <!-- Imagen -->
+            <div class="form-group">
+				<label for="image">Selecciona una imagen:</label><br>
+				<input type="file" name="image" id="image" accept="image/*"><br><br>
+            </div>
 
-    if (mysqli_num_rows($result) > 0) {
-        echo "<table>";
-        echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Alquilado</th><th>Foto</th><th>Acción</th></tr>";
-
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($row['modelo']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['marca']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['color']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['precio']) . "</td>";
-            echo "<td>" . ($row['alquilado'] ? "Sí" : "No") . "</td>";
-            echo "<td><img src='../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='100'></td>";
-            echo "<td>
-                    <form method='POST' style='display:inline;'>
-                    <input type='hidden' name='delete_model' value='" . htmlspecialchars($row['modelo']) . "'>
-                    <input type='hidden' name='delete_brand' value='" . htmlspecialchars($row['marca']) . "'>
-                    <button type='submit'>Eliminar</button>
-                    </form>
-                </td>";
-            echo "</tr>";
-        }
-
-        echo "</table>";
-    } else {
-        echo "<p>No se encontraron resultados.</p>";
-    }
-
-    mysqli_close($conn);
-?>
-
-
+            <!-- Botones -->
+            <div class="form-actions">
+                <button type="submit">Enviar</button>
+                <button type="reset">Borrar Todo</button>
+            </div>
+        </form>
+    </div>
 </body>
 </html>
 
 </div>
+</body>
+</html>

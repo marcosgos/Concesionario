@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Redirigir según el tipo de usuario
             if ($tipo_usuario == "admin") {
-                header("Location: Backend/index.html");
+                header("Location: Backend/index.php");
             } elseif ($tipo_usuario == "vendedor") {
                 header("Location: Frontend/Vendedor/index.html");
             } else {

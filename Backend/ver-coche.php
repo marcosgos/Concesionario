@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <html>
 <head>
 <title>Concesionario</title>
@@ -183,23 +186,34 @@ button:hover {
     opacity: 0.9;
 }
 
+.cuenta {
+    position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
+    top: 15px; /* Ajusta el espacio desde la parte superior */
+    right: 40px; /* Coloca el div en la esquina derecha */
+}
+
+.t{
+	padding:5px;
+	background-color:red;
+	border-radius:20px;
+}
+
 </style>
 </head>
 <body>
 
 <!-- Logo -->
 <div class="logo">
-    <a href="index.html"><img src="logo.jpg" alt="Logo del concesionario"></a><!-- Cambiar URL por el logo -->
+    <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a>
 </div>
 
 <!-- Menú superior -->
 <div class="nav">
     <ul class="nav__list">
         <li>
-            <a href="coches.html">Coches</a>
+            <a>Coches</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-coche.html">A&ntilde;adir</a></li>
+                <li><a href="registrar-coche.php">A&ntilde;adir</a></li>
                 <li><a href="ver-coche.php">Listar</a></li>
                 <li><a href="buscar-coche.php">Buscar</a></li>
                 <li><a href="modificar-coche.php">Modificar</a></li>
@@ -207,10 +221,9 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a href="usuarios.html">Usuarios</a>
+            <a>Usuarios</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-user.html">A&ntilde;adir</a></li>
+                <li><a href="registrar-user.php">A&ntilde;adir</a></li>
                 <li><a href="ver-user.php">Listar</a></li>
 				<li><a href="buscar-user.php">Buscar</a></li>
                 <li><a href="modificar-user.php">Modificar</a></li>
@@ -220,12 +233,25 @@ button:hover {
         <li>
             <a href="alquileres.html">Alquileres</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
 				<li><a href="listar-alquileres.php">Listar</a></li>
                 <li><a href="borrar-alquileres.php">Borrar</a></li>
             </ul>
         </li>
     </ul>
+</div>
+<div class="cuenta">
+    <a href="cuenta.html">
+        <button class="t">
+            <?php 
+            if (isset($_SESSION['name'])) {
+                echo $_SESSION['name']; // Muestra el nombre de usuario si está en la sesión
+				echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesion</button></a>";
+            } else {
+                echo "Iniciar Sesión"; // Mensaje predeterminado si no hay sesión iniciada
+            }
+            ?>
+        </button>
+    </a>
 </div>
 <div>
     <style>
