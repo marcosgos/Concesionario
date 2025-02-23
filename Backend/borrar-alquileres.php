@@ -241,11 +241,37 @@ button:hover {
     <a href="cuenta.html">
         <button class="t">
             <?php 
+            session_start();
             if (isset($_SESSION['name'])) {
-                echo $_SESSION['name']; // Muestra el nombre de usuario si está en la sesión
-				echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesion</button></a>";
+                // Conexión a la base de datos
+                $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
+
+                // Verificar conexión
+                if ($conexion->connect_error) {
+                    die("Error de conexión: " . $conexion->connect_error);
+                }
+
+                // Obtener saldo del usuario
+                $nombra = $_SESSION['name'];
+                $sql = "SELECT nombre, saldo FROM usuarios WHERE nombre = '$nombra'";
+                $resultado = mysqli_query($conexion, $sql);
+
+                if ($resultado && $fila = mysqli_fetch_assoc($resultado)) {
+                    $nombre = $fila['nombre'];
+                    $saldo = $fila['saldo'];
+
+                    // Mostrar nombre y saldo
+                    echo "$nombre - Saldo: $saldo";
+                } else {
+                    echo "Error al obtener saldo";
+                }
+
+                // Cerrar conexión
+                mysqli_close($conexion);
+
+                echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesión</button></a>";
             } else {
-                echo "Iniciar Sesión"; // Mensaje predeterminado si no hay sesión iniciada
+                echo "Iniciar Sesión";
             }
             ?>
         </button>
@@ -271,69 +297,76 @@ button:hover {
 </head>
 <body>
     <h1>Lista de Coches</h1>
-    <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345678";
-    $dbname = "concesionario";
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "12345678";
+$dbname = "concesionario";
 
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
+$conn = mysqli_connect($servername, $username, $password, $dbname);
 
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
-    // Verificar si se ha enviado el formulario de eliminación
-    if (isset($_POST['delete_model']) && isset($_POST['delete_brand'])) {
-        $delete_model = $_POST['delete_model'];
-        $delete_brand = $_POST['delete_brand'];
+// Verificar si se ha enviado el formulario de "eliminar"
+if (isset($_POST['delete_model']) && isset($_POST['delete_brand'])) {
+    $delete_model = $_POST['delete_model'];
+    $delete_brand = $_POST['delete_brand'];
 
-        // Consulta SQL para eliminar el coche de la base de datos
-        $delete_sql = "DELETE FROM coches WHERE modelo = ? AND marca = ?";
-        $stmt = mysqli_prepare($conn, $delete_sql);
-        mysqli_stmt_bind_param($stmt, 'ss', $delete_model, $delete_brand); // 'ss' son los tipos de datos (string, string)
-        
-        // Ejecutar la consulta
-        if (mysqli_stmt_execute($stmt)) {
-            echo "<p>Coche eliminado con éxito.</p>";
-        } else {
-            echo "<p>Error al eliminar el coche: " . mysqli_error($conn) . "</p>";
-        }
-        mysqli_stmt_close($stmt); // Cerrar la declaración
-    }
+    // Obtener el id_coche
+    $query_id = "SELECT id_coche FROM coches WHERE modelo = '$delete_model' AND marca = '$delete_brand'";
+    $result = mysqli_query($conn, $query_id);
+    $row = mysqli_fetch_assoc($result);
+    $id_coche = $row['id_coche'];
 
-    $sql = "SELECT * FROM coches WHERE alquilado = 1";
-    $result = mysqli_query($conn, $sql);
+    if ($id_coche) {
+        // Eliminar el registro de la tabla alquileres
+        mysqli_query($conn, "DELETE FROM alquileres WHERE id_coche = $id_coche");
 
-    if (mysqli_num_rows($result) > 0) {
-        echo "<table>";
-        echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Alquilado</th><th>Foto</th><th>Acción</th></tr>";
+        // Actualizar el estado de alquiler en la tabla coches
+        mysqli_query($conn, "UPDATE coches SET alquilado = 0 WHERE id_coche = $id_coche");
 
-        while ($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($row['modelo']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['marca']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['color']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['precio']) . "</td>";
-            echo "<td>" . ($row['alquilado'] ? "Sí" : "No") . "</td>";
-            echo "<td><img src='../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='100'></td>";
-            echo "<td>
-                    <form method='POST' style='display:inline;'>
-                    <input type='hidden' name='delete_model' value='" . htmlspecialchars($row['modelo']) . "'>
-                    <input type='hidden' name='delete_brand' value='" . htmlspecialchars($row['marca']) . "'>
-                    <button type='submit'>Eliminar</button>
-                    </form>
-                </td>";
-            echo "</tr>";
-        }
-
-        echo "</table>";
+        echo "<p>Estado de alquiler actualizado y registro eliminado de la tabla alquileres.</p>";
     } else {
-        echo "<p>No se encontraron resultados.</p>";
+        echo "<p>Error: No se encontró el coche en la base de datos.</p>";
+    }
+}
+
+$sql = "SELECT * FROM coches WHERE alquilado = 1";
+$result = mysqli_query($conn, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+    echo "<table>";
+    echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Alquilado</th><th>Foto</th><th>Acción</th></tr>";
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>";
+        echo "<td>" . $row['modelo'] . "</td>";
+        echo "<td>" . $row['marca'] . "</td>";
+        echo "<td>" . $row['color'] . "</td>";
+        echo "<td>" . $row['precio'] . "</td>";
+        echo "<td>" . ($row['alquilado'] ? "Sí" : "No") . "</td>";
+        echo "<td><img src='../" . $row['foto'] . "' alt='Foto' width='100'></td>";
+        echo "<td>
+                <form method='POST' style='display:inline;'>
+                <input type='hidden' name='delete_model' value='" . $row['modelo'] . "'>
+                <input type='hidden' name='delete_brand' value='" . $row['marca'] . "'>
+                <button type='submit'>Eliminar</button>
+                </form>
+            </td>";
+        echo "</tr>";
     }
 
-    mysqli_close($conn);
+    echo "</table>";
+} else {
+    echo "<p>No se encontraron resultados.</p>";
+}
+
+mysqli_close($conn);
 ?>
+
+
 
 
 </body>

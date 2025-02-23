@@ -212,7 +212,7 @@ button:hover {
 <div class="nav">
     <ul class="nav__list">
         <li>
-            <a href="coches.html">Coches</a>
+            <a>Coches</a>
             <ul>
                 <li><a href="registrar-coche.php">A&ntilde;adir</a></li>
                 <li><a href="ver-coche.php">Listar</a></li>
@@ -222,7 +222,7 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a href="usuarios.html">Usuarios</a>
+            <a>Usuarios</a>
             <ul>
                 <li><a href="registrar-user.php">A&ntilde;adir</a></li>
                 <li><a href="ver-user.php">Listar</a></li>
@@ -232,7 +232,7 @@ button:hover {
             </ul>
         </li>
         <li>
-            <a href="alquileres.html">Alquileres</a>
+            <a>Alquileres</a>
             <ul>
 				<li><a href="listar-alquileres.php">Listar</a></li>
                 <li><a href="borrar-alquileres.php">Borrar</a></li>
@@ -244,11 +244,37 @@ button:hover {
     <a href="cuenta.html">
         <button class="t">
             <?php 
+            session_start();
             if (isset($_SESSION['name'])) {
-                echo $_SESSION['name']; // Muestra el nombre de usuario si está en la sesión
-				echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesion</button></a>";
+                // Conexión a la base de datos
+                $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
+
+                // Verificar conexión
+                if ($conexion->connect_error) {
+                    die("Error de conexión: " . $conexion->connect_error);
+                }
+
+                // Obtener saldo del usuario
+                $nombra = $_SESSION['name'];
+                $sql = "SELECT nombre, saldo FROM usuarios WHERE nombre = '$nombra'";
+                $resultado = mysqli_query($conexion, $sql);
+
+                if ($resultado && $fila = mysqli_fetch_assoc($resultado)) {
+                    $nombre = $fila['nombre'];
+                    $saldo = $fila['saldo'];
+
+                    // Mostrar nombre y saldo
+                    echo "$nombre - Saldo: $saldo";
+                } else {
+                    echo "Error al obtener saldo";
+                }
+
+                // Cerrar conexión
+                mysqli_close($conexion);
+
+                echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesión</button></a>";
             } else {
-                echo "Iniciar Sesión"; // Mensaje predeterminado si no hay sesión iniciada
+                echo "Iniciar Sesión";
             }
             ?>
         </button>

@@ -1,4 +1,5 @@
 <?php
+session_start(); // Iniciar sesión
 $servername = "localhost";
 $username = "root";
 $password = "12345678";
@@ -9,6 +10,14 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
+
+// Verificar si hay una sesión activa con un usuario
+if (!isset($_SESSION['name'])) {
+    die("Error: No hay sesión activa.");
+}
+
+// Obtener el nombre del usuario de la sesión
+$ve = $_SESSION['name'];
 
 // Obtener y procesar datos del usuario
 $modelo = $_REQUEST['modelo'];
@@ -42,19 +51,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {
 }
 
 // Consulta SQL
-$sql = "INSERT INTO coches (modelo, marca, color, precio, alquilado, foto) 
-        VALUES ('$modelo', '$marca', '$color', $precio, $alquilado, '$foto')";
+$sql = "INSERT INTO coches (modelo, marca, color, precio, alquilado, foto, vendedor) 
+        VALUES ('$modelo', '$marca', '$color', $precio, $alquilado, '$foto', '$ve')";
 
 // Verificar resultados
 if (mysqli_query($conn, $sql)) {
     echo "<h1>El coche " . htmlspecialchars($modelo) . " registrado correctamente!</h1>";
-    echo "<a href='registrar-coche.html'>Insertar otros coches??</a>";
+    echo "<a href='registrar-coche.php'>Insertar otros coches?</a>";
 } else {
     echo "<h1>Error en el registro: " . mysqli_error($conn) . "</h1>";
-    echo "<a href='registrar-coche.html'>Intentar de nuevo</a>";
+    echo "<a href='registrar-coche.php'>Intentar de nuevo</a>";
 }
 
 // Cerrar conexión
 mysqli_close($conn);
 ?>
+
 
