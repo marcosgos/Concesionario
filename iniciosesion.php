@@ -26,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($tipo_usuario == "admin") {
                 header("Location: Backend/index.php");
             } elseif ($tipo_usuario == "vendedor") {
-                header("Location: Frontend/Vendedor/index.html");
+                header("Location: Frontend/Vendedor/index.php");
             } else {
-                header("Location: Frontend/Cliente/index.html");
+                header("Location: Frontend/Cliente/index.php");
             }
             exit();
         } else {
