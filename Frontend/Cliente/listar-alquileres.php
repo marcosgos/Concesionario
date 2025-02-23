@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <html>
 <head>
 <title>Concesionario</title>
@@ -182,50 +185,90 @@ button[type="reset"]:hover {
 button:hover {
     opacity: 0.9;
 }
+.cuenta {
+    position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
+    top: 15px; /* Ajusta el espacio desde la parte superior */
+    right: 40px; /* Coloca el div en la esquina derecha */
+}
 
+.t{
+	padding:5px;
+	background-color:red;
+	border-radius:20px;
+}
 </style>
 </head>
 <body>
 
 <!-- Logo -->
 <div class="logo">
-    <a href="index.html"><img src="logo.jpg" alt="Logo del concesionario"></a><!-- Cambiar URL por el logo -->
+    <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a><!-- Cambiar URL por el logo -->
 </div>
 
 <!-- Menú superior -->
 <div class="nav">
     <ul class="nav__list">
         <li>
-            <a href="coches.html">Coches</a>
+            <a>Coches en Stock</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-coche.html">A&ntilde;adir</a></li>
-                <li><a href="ver-coche.php">Listar</a></li>
-                <li><a href="buscar-coche.php">Buscar</a></li>
-                <li><a href="modificar-coche.php">Modificar</a></li>
-                <li><a href="eliminar-coche.php">Borrar</a></li>
+                <li><a href="ver-coche.php">Ver todos los Coches</a></li>
+                <li><a href="buscar-coche.php">Buscador de Coches</a></li>
             </ul>
         </li>
         <li>
-            <a href="usuarios.html">Usuarios</a>
+            <a>Vendedores</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-user.html">A&ntilde;adir</a></li>
-                <li><a href="ver-user.php">Listar</a></li>
-				<li><a href="buscar-user.php">Buscar</a></li>
-                <li><a href="modificar-user.php">Modificar</a></li>
-                <li><a href="eliminar-user.php">Borrar</a></li>
+                <li><a href="ver-user.php">Ver todos los Vendedores</a></li>
+				<li><a href="buscar-user.php">Buscador de Vendedores</a></li>
             </ul>
         </li>
         <li>
-            <a href="alquileres.html">Alquileres</a>
+            <a>Coches Alquilados</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
 				<li><a href="listar-alquileres.php">Listar</a></li>
-                <li><a href="borrar-alquileres.php">Borrar</a></li>
             </ul>
         </li>
     </ul>
+</div>
+<div class="cuenta">
+    <a href="cuenta.html">
+        <button class="t">
+            <?php 
+            session_start();
+            if (isset($_SESSION['name'])) {
+                // Conexión a la base de datos
+                $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
+
+                // Verificar conexión
+                if ($conexion->connect_error) {
+                    die("Error de conexión: " . $conexion->connect_error);
+                }
+
+                // Obtener saldo del usuario
+                $nombra = $_SESSION['name'];
+                $sql = "SELECT nombre, saldo FROM usuarios WHERE nombre = '$nombra'";
+                $resultado = mysqli_query($conexion, $sql);
+
+                if ($resultado && $fila = mysqli_fetch_assoc($resultado)) {
+                    $nombre = $fila['nombre'];
+                    $saldo = $fila['saldo'];
+
+                    // Mostrar nombre y saldo
+                    echo "$nombre - Saldo: $saldo";
+                } else {
+                    echo "Error al obtener saldo";
+                }
+
+                // Cerrar conexión
+                mysqli_close($conexion);
+
+                echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesión</button></a>";
+            } else {
+                echo "Iniciar Sesión";
+            }
+            ?>
+        </button>
+    </a>
 </div>
 <div>
     <style>
@@ -260,24 +303,24 @@ button:hover {
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-
+	$nombroi = $_SESSION['name'];
     // Consulta SQL
-    $sql = "select * from coches where alquilado = 1";
+    $sql = "select usuarios.nombre, modelo, marca, color, precio, foto from alquileres, usuarios, coches where alquileres.id_usuario=usuarios.id_usuario and alquileres.id_coche=coches.id_coche and usuarios.nombre = '$nombroi'";
     $result = mysqli_query($conn, $sql);
 
     // Verificar si hay resultados
     if (mysqli_num_rows($result) > 0) {
         echo "<table>";
-        echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Alquilado</th><th>Foto</th></tr>";
+        echo "<tr><th>Usuario</th><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Foto</th></tr>";
 
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
+			echo "<td>" . htmlspecialchars($row['nombre']) . "</td>";
             echo "<td>" . htmlspecialchars($row['modelo']) . "</td>";
             echo "<td>" . htmlspecialchars($row['marca']) . "</td>";
             echo "<td>" . htmlspecialchars($row['color']) . "</td>";
             echo "<td>" . htmlspecialchars($row['precio']) . "</td>";
-            echo "<td>" . ($row['alquilado'] ? "Sí" : "No") . "</td>";
-            echo "<td><img src='" . htmlspecialchars($row['foto']) . "' alt='Foto' width='100'></td>";
+            echo "<td><img src='../../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='100'></td>";
             echo "</tr>";
         }
 

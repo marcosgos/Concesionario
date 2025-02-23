@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -78,7 +81,7 @@
         }
         .form-container {
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 30px;
+            padding: 40px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             width: 100%;
@@ -141,50 +144,87 @@
             font-weight: bold;
             margin-top: 20px;
         }
+		.cuenta {
+			position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
+			top: 15px; /* Ajusta el espacio desde la parte superior */
+			right: 40px; /* Coloca el div en la esquina derecha */
+		}
+
+		.t{
+			padding:5px;
+			background-color:red;
+			border-radius:20px;
+		}
     </style>
 </head>
 <body>
-    <!-- Logo -->
     <div class="logo">
-        <a href="index.html"><img src="logo.jpg" alt="Logo del concesionario"></a>
+        <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a>
     </div>
-
-    <!-- Menú superior -->
-    <div class="nav">
+<div class="nav">
     <ul class="nav__list">
         <li>
-            <a href="coches.html">Coches</a>
+            <a>Coches en Stock</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-coche.html">A&ntilde;adir</a></li>
-                <li><a href="ver-coche.php">Listar</a></li>
-                <li><a href="buscar-coche.php">Buscar</a></li>
-                <li><a href="modificar-coche.php">Modificar</a></li>
-                <li><a href="eliminar-coche.php">Borrar</a></li>
+                <li><a href="ver-coche.php">Ver todos los Coches</a></li>
+                <li><a href="buscar-coche.php">Buscador de Coches</a></li>
             </ul>
         </li>
         <li>
-            <a href="usuarios.html">Usuarios</a>
+            <a>Vendedores</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="registrar-user.html">A&ntilde;adir</a></li>
-                <li><a href="ver-user.php">Listar</a></li>
-				<li><a href="buscar-user.php">Buscar</a></li>
-                <li><a href="modificar-user.php">Modificar</a></li>
-                <li><a href="eliminar-user.php">Borrar</a></li>
+                <li><a href="ver-user.php">Ver todos los Vendedores</a></li>
+				<li><a href="buscar-user.php">Buscador de Vendedores</a></li>
             </ul>
         </li>
         <li>
-            <a href="alquileres.html">Alquileres</a>
+            <a>Coches Alquilados</a>
             <ul>
-                <li><a href="index.html">Inicio</a></li>
 				<li><a href="listar-alquileres.php">Listar</a></li>
-                <li><a href="borrar-alquileres.php">Borrar</a></li>
             </ul>
         </li>
     </ul>
 </div>
+<div class="cuenta">
+    <a href="cuenta.html">
+        <button class="t">
+            <?php 
+            session_start();
+            if (isset($_SESSION['name'])) {
+                // Conexión a la base de datos
+                $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
 
+                // Verificar conexión
+                if ($conexion->connect_error) {
+                    die("Error de conexión: " . $conexion->connect_error);
+                }
+
+                // Obtener saldo del usuario
+                $nombra = $_SESSION['name'];
+                $sql = "SELECT nombre, saldo FROM usuarios WHERE nombre = '$nombra'";
+                $resultado = mysqli_query($conexion, $sql);
+
+                if ($resultado && $fila = mysqli_fetch_assoc($resultado)) {
+                    $nombre = $fila['nombre'];
+                    $saldo = $fila['saldo'];
+
+                    // Mostrar nombre y saldo
+                    echo "$nombre - Saldo: $saldo";
+                } else {
+                    echo "Error al obtener saldo";
+                }
+
+                // Cerrar conexión
+                mysqli_close($conexion);
+
+                echo "<a href='cerrarsesion.php'><button class='t'>Cerrar Sesión</button></a>";
+            } else {
+                echo "Iniciar Sesión";
+            }
+            ?>
+        </button>
+    </a>
+</div>
     <!-- Contenedor del formulario -->
     <div class="form-container">
         <h2>Buscar Coche</h2>
@@ -228,7 +268,7 @@
                     echo "<td>" . htmlspecialchars($row['color']) . "</td>";
                     echo "<td>" . htmlspecialchars($row['precio']) . " €</td>";
                     echo "<td>" . ($row['alquilado'] ? "Sí" : "No") . "</td>";
-                    echo "<td><img src='" . htmlspecialchars($row['foto']) . "' alt='Foto' width='100'></td>";
+                    echo "<td><img src='../../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='200'></td>";
                     echo "</tr>";
                 }
                 echo "</table>";
