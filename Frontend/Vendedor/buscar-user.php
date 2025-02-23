@@ -144,7 +144,7 @@ session_start();
         }
         .message {
             text-align: center;
-            color: yellow;
+            color: black;
             font-weight: bold;
             margin-top: 50px;
         }
@@ -168,30 +168,34 @@ session_start();
     </div>
 
     <!-- Menú superior -->
-<div class="nav">
+    <div class="nav">
     <ul class="nav__list">
         <li>
-            <a>Coches en Stock</a>
+            <a>Coches</a>
             <ul>
-                <li><a href="ver-coche.php">Ver todos los Coches</a></li>
-                <li><a href="buscar-coche.php">Buscador de Coches</a></li>
+                <li><a href="registrar-coche.php">A&ntilde;adir</a></li>
+                <li><a href="ver-coche.php">Listar</a></li>
+                <li><a href="buscar-coche.php">Buscar</a></li>
+                <li><a href="modificar-coche.php">Modificar</a></li>
+                <li><a href="eliminar-coche.php">Borrar</a></li>
             </ul>
         </li>
         <li>
-            <a>Vendedores</a>
+            <a>Usuarios</a>
             <ul>
-                <li><a href="ver-user.php">Ver todos los Vendedores</a></li>
-				<li><a href="buscar-user.php">Buscador de Vendedores</a></li>
+                <li><a href="ver-user.php">Listar</a></li>
+				<li><a href="buscar-user.php">Buscar</a></li>
             </ul>
         </li>
         <li>
-            <a>Coches Alquilados</a>
+            <a>Alquileres</a>
             <ul>
 				<li><a href="listar-alquileres.php">Listar</a></li>
             </ul>
         </li>
     </ul>
 </div>
+
 <div class="cuenta">
     <a href="cuenta.html">
         <button class="t">

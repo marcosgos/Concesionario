@@ -234,7 +234,6 @@ button:hover {
     <a href="cuenta.html">
         <button class="t">
             <?php 
-            session_start();
             if (isset($_SESSION['name'])) {
                 // Conexión a la base de datos
                 $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
@@ -299,7 +298,7 @@ button:hover {
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-    $sql = "SELECT * FROM usuarios where tipo_usuario = 'vendedor'";
+    $sql = "SELECT * FROM usuarios where tipo_usuario = 'vendedor' or tipo_usuario = 'admin'";
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) > 0) {
         echo "<table>";

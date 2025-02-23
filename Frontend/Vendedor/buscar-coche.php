@@ -127,71 +127,68 @@ session_start();
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-			border-radius:20px;
-			
         }
         th, td {
             border: 1px solid #ddd;
             text-align: center;
             padding: 8px;
             background-color: #f2f2f2;
-			border-radius:20px;
         }
         th {
             background-color: rgba(255, 0, 0, 0.8);
             color: white;
-			border-radius:20px;
         }
         .message {
             text-align: center;
-            color: yellow;
+            color: red;
             font-weight: bold;
-            margin-top: 50px;
+            margin-top: 20px;
         }
 		.cuenta {
-    position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
-    top: 15px; /* Ajusta el espacio desde la parte superior */
-    right: 40px; /* Coloca el div en la esquina derecha */
-}
+			position: fixed; /* Cambiado de absolute a fixed para que se mantenga en la esquina */
+			top: 15px; /* Ajusta el espacio desde la parte superior */
+			right: 40px; /* Coloca el div en la esquina derecha */
+		}
 
-.t{
-	padding:5px;
-	background-color:red;
-	border-radius:20px;
-}
+		.t{
+			padding:5px;
+			background-color:red;
+			border-radius:20px;
+		}
     </style>
 </head>
 <body>
-    <!-- Logo -->
     <div class="logo">
         <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a>
     </div>
-
-    <!-- Menú superior -->
 <div class="nav">
     <ul class="nav__list">
         <li>
-            <a>Coches en Stock</a>
+            <a>Coches</a>
             <ul>
-                <li><a href="ver-coche.php">Ver todos los Coches</a></li>
-                <li><a href="buscar-coche.php">Buscador de Coches</a></li>
+                <li><a href="registrar-coche.php">A&ntilde;adir</a></li>
+                <li><a href="ver-coche.php">Listar</a></li>
+                <li><a href="buscar-coche.php">Buscar</a></li>
+                <li><a href="modificar-coche.php">Modificar</a></li>
+                <li><a href="eliminar-coche.php">Borrar</a></li>
             </ul>
         </li>
         <li>
-            <a>Vendedores</a>
+            <a>Usuarios</a>
             <ul>
-                <li><a href="ver-user.php">Ver todos los Vendedores</a></li>
-				<li><a href="buscar-user.php">Buscador de Vendedores</a></li>
+                <li><a href="ver-user.php">Listar</a></li>
+				<li><a href="buscar-user.php">Buscar</a></li>
             </ul>
         </li>
         <li>
-            <a>Coches Alquilados</a>
+            <a>Alquileres</a>
             <ul>
 				<li><a href="listar-alquileres.php">Listar</a></li>
             </ul>
         </li>
     </ul>
 </div>
+
 <div class="cuenta">
     <a href="cuenta.html">
         <button class="t">
@@ -231,66 +228,60 @@ session_start();
         </button>
     </a>
 </div>
+    <!-- Contenedor del formulario -->
     <div class="form-container">
-        <h2>Buscar Usuario:</h2>
+        <h2>Buscar Coche</h2>
         <form method="POST">
             <div class="form-group">
-                <label for="nombre">Nombre del Usuario:</label>
-                <input type="text" id="nombre" name="nombre" required>
+                <label for="modelo">Modelo del coche:</label>
+                <input type="text" id="modelo" name="modelo" placeholder="Ej: Corolla">
             </div>
             <div class="form-group">
-                <label for="apellido">Apellidos del Usuario:</label>
-                <input type="text" id="apellido" name="apellido" required>
+                <label for="marca">Marca del coche:</label>
+                <input type="text" id="marca" name="marca" placeholder="Ej: Toyota">
             </div>
             <button type="submit">Buscar</button>
         </form>
     </div>
+
+    <!-- Resultados de la búsqueda -->
     <div class="container">
         <?php
-		$servername = "localhost";
-		$username = "root";
-		$password = "12345678";
-		$dbname = "concesionario";
+        $servername = "localhost";
+        $username = "root";
+        $password = "12345678";
+        $dbname = "concesionario";
 
-		// Conexión a la base de datos
-		$conn = mysqli_connect($servername, $username, $password, $dbname);
+        $conn = mysqli_connect($servername, $username, $password, $dbname);
 
-		if (!$conn) {
-			die("Error de conexión: " . mysqli_connect_error());
-		}
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $modelo = mysqli_real_escape_string($conn, $_REQUEST['modelo']);
+            $marca = mysqli_real_escape_string($conn, $_REQUEST['marca']);
 
-		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-			$nombre = $_REQUEST['nombre'];
-			$apellido = $_REQUEST['apellido'];
+            $sql = "SELECT * FROM coches WHERE modelo LIKE '%$modelo%' AND marca LIKE '%$marca%' and vendedor = '$nombra'";
+            $result = mysqli_query($conn, $sql);
 
-			$sql = "SELECT * FROM usuarios WHERE nombre LIKE '$nombre' AND apellidos LIKE '$apellido' and tipo_usuario = 'vendedor' or tipo_usuario = 'admin'";
-			$result = mysqli_query($conn, $sql); // Asignar el resultado de la consulta a $result
+            if (mysqli_num_rows($result) > 0) {
+                echo "<table>";
+                echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Alquilado</th><th>Foto</th></tr>";
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($row['modelo']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['marca']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['color']) . "</td>";
+                    echo "<td>" . htmlspecialchars($row['precio']) . " €</td>";
+                    echo "<td>" . ($row['alquilado'] ? "Sí" : "No") . "</td>";
+                    echo "<td><img src='../../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='200'></td>";
+                    echo "</tr>";
+                }
+                echo "</table>";
+            } else {
+                echo "<div class='message'>No se encontraron resultados para el modelo o la marca especificados.</div>";
+            }
+        }
 
-			if ($result && mysqli_num_rows($result) > 0) { // Verificar si hay resultados
-				// Generar tabla
-				echo "<table>";
-				echo "<tr><th>Nombre</th><th>Apellidos</th><th>Email</th><th>Tipo de Usuario</th></tr>";
-
-				while ($row = mysqli_fetch_assoc($result)) {
-					echo "<tr>";
-					echo "<td>" . ($row['nombre']) . "</td>";
-					echo "<td>" . ($row['apellidos']) . "</td>";
-					echo "<td>" . ($row['email']) . "</td>";
-					echo "<td>" . ($row['tipo_usuario']) . "</td>";
-					echo "</tr>";
-				}
-
-				echo "</table>";
-			} else {
-				echo "<div class='message'>No se encontró al usuario</div>";
-			}
-		}
-
-		// Cerrar conexión
-		mysqli_close($conn);
-		?>
-
-
+        mysqli_close($conn);
+        ?>
     </div>
 </body>
 </html>

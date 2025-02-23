@@ -1,6 +1,7 @@
 <?php
 session_start();
 ?>
+
 <html>
 <head>
 <title>Concesionario</title>
@@ -204,34 +205,38 @@ button:hover {
 
 <!-- Logo -->
 <div class="logo">
-    <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a>
+    <a href="index.php"><img src="logo.jpg" alt="Logo del concesionario"></a><!-- Cambiar URL por el logo -->
 </div>
 
 <!-- Menú superior -->
 <div class="nav">
     <ul class="nav__list">
         <li>
-            <a>Coches en Stock</a>
+            <a>Coches</a>
             <ul>
-                <li><a href="ver-coche.php">Ver todos los Coches</a></li>
-                <li><a href="buscar-coche.php">Buscador de Coches</a></li>
+                <li><a href="registrar-coche.php">A&ntilde;adir</a></li>
+                <li><a href="ver-coche.php">Listar</a></li>
+                <li><a href="buscar-coche.php">Buscar</a></li>
+                <li><a href="modificar-coche.php">Modificar</a></li>
+                <li><a href="eliminar-coche.php">Borrar</a></li>
             </ul>
         </li>
         <li>
-            <a>Vendedores</a>
+            <a>Usuarios</a>
             <ul>
-                <li><a href="ver-user.php">Ver todos los Vendedores</a></li>
-				<li><a href="buscar-user.php">Buscador de Vendedores</a></li>
+                <li><a href="ver-user.php">Listar</a></li>
+				<li><a href="buscar-user.php">Buscar</a></li>
             </ul>
         </li>
         <li>
-            <a>Coches Alquilados</a>
+            <a>Alquileres</a>
             <ul>
 				<li><a href="listar-alquileres.php">Listar</a></li>
             </ul>
         </li>
     </ul>
 </div>
+
 <div class="cuenta">
     <a href="cuenta.html">
         <button class="t">
@@ -271,83 +276,56 @@ button:hover {
         </button>
     </a>
 </div>
+    <div class="form-container">
+        <h2>Registrar Coche</h2>
+        <form action="anadir-coche.php" method="POST" enctype="multipart/form-data">
+            <!-- Modelo -->
+            <div class="form-group">
+                <label for="modelo">Modelo</label>
+                <input type="text" id="modelo" name="modelo" placeholder="Ej: Civic" required>
+            </div>
 
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            
-			border-radius:10px;
-            text-align: center;
-            padding: 8px;
-			background-color: #f2f2f2;
-        }
-        th {
-            background-color: rgba(255, 0, 0, 0.8);
-        }
-    </style>
-</head>
-<body>
-    <h1>Lista de Coches</h1>
-<?php
+            <!-- Marca -->
+            <div class="form-group">
+                <label for="marca">Marca</label>
+                <input type="text" id="marca" name="marca" placeholder="Ej: Honda" required>
+            </div>
 
-$servername = "localhost";
-$username = "root";
-$password = "12345678";
-$dbname = "concesionario";
+            <!-- Color -->
+            <div class="form-group">
+                <label for="color">Color</label>
+                <input type="text" id="color" name="color" placeholder="Ej: Rojo" required>
+            </div>
 
-// Conectar a la base de datos
-$conn = mysqli_connect($servername, $username, $password, $dbname);
+            <!-- Precio -->
+            <div class="form-group">
+                <label for="precio">Precio</label>
+                <input type="number" id="precio" name="precio" placeholder="Ej: 15000" min="0" required>
+            </div>
 
-// Verificar conexión
-if (!$conn) {
-    die("Error de conexión: " . mysqli_connect_error());
-}
+            <!-- ¿Está alquilado? -->
+            <div class="form-group">
+                <label>Esta alquilado?</label>
+                <input type="radio" name="alquilado" value="Si">SI
+				<input type="radio" name="alquilado" value="No">No
+            </div>
 
-// Verificar si el usuario ha iniciado sesión
-if (!isset($_SESSION['name'])) {
-    die("Debes iniciar sesión para alquilar un coche.");
-}
+            <!-- Imagen -->
+            <div class="form-group">
+				<label for="image">Selecciona una imagen:</label><br>
+				<input type="file" name="image" id="image" accept="image/*"><br><br>
+            </div>
 
-// Consulta SQL para mostrar los coches disponibles
-$sql = "SELECT * FROM coches WHERE alquilado = 0";
-$result = mysqli_query($conn, $sql);
+            <!-- Botones -->
+            <div class="form-actions">
+                <button type="submit">Enviar</button>
+                <button type="reset">Borrar Todo</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
 
-// Verificar si hay resultados
-if (mysqli_num_rows($result) > 0) {
-    echo "<table border='1'>";
-    echo "<tr><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Foto</th><th>Acción</th><th>Vendedor</th></tr>";
-
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo "<tr>";
-        echo "<td>" . htmlspecialchars($row['modelo']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['marca']) . "</td>";
-        echo "<td>" . htmlspecialchars($row['color']) . "</td>";
-        echo "<td>$" . number_format($row['precio'], 2) . "</td>";
-        echo "<td><img src='../../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='200'></td>";
-        echo "<td>"
-            . "<form method='post' action='alquilar.php'>"
-            . "<input type='hidden' name='id_coche' value='" . $row['id_coche'] . "'>"
-            . "<button type='submit' name='alquilar'>Alquilar</button>"
-            . "</form>"
-            . "</td>";
-        echo "<td>" . htmlspecialchars($row['vendedor']) . "</td>";
-        echo "</tr>";
-    }
-
-    echo "</table>";
-} else {
-    echo "<p>No hay coches disponibles para alquilar.</p>";
-}
-
-// Cerrar conexión
-mysqli_close($conn);
-?>
-
-
-
-
+</div>
 </body>
 </html>
