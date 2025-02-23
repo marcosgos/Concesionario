@@ -288,7 +288,6 @@ button:hover {
     <a href="cuenta.html">
         <button class="t">
             <?php 
-            session_start();
             if (isset($_SESSION['name'])) {
                 // Conexión a la base de datos
                 $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
