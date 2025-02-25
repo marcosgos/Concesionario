@@ -129,7 +129,7 @@ body {
         <li>
             <a>Usuarios</a>
             <ul>
-                <li><a href="registrar-user.html">A&ntilde;adir</a></li>
+                <li><a href="registrar-user.php">A&ntilde;adir</a></li>
                 <li><a href="ver-user.php">Listar</a></li>
 				<li><a href="buscar-user.php">Buscar</a></li>
                 <li><a href="modificar-user.php">Modificar</a></li>
@@ -152,7 +152,7 @@ body {
             <?php 
             if (isset($_SESSION['name'])) {
                 // Conexión a la base de datos
-                $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
+                $conexion = new mysqli("localhost", "root", "rootroot", "concesionario");
 
                 // Verificar conexión
                 if ($conexion->connect_error) {

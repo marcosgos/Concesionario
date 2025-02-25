@@ -66,7 +66,7 @@
 <?php
 $servername = "localhost";
 $username = "root";
-$password = "12345678";
+$password = "rootroot";
 $dbname = "concesionario";
 
 // Conexión a la base de datos
