@@ -247,7 +247,7 @@ body {
             <?php 
             if (isset($_SESSION['name'])) {
                 // Conexión a la base de datos
-                $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
+                $conexion = new mysqli("localhost", "root", "rootroot", "concesionario");
 
                 // Verificar conexión
                 if ($conexion->connect_error) {
@@ -301,7 +301,7 @@ body {
 <?php
 $servername = "localhost";
 $username = "root";
-$password = "12345678";
+$password = "rootroot";
 $dbname = "concesionario";
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);

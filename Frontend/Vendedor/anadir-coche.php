@@ -2,7 +2,7 @@
 session_start();
 $servername = "localhost";
 $username = "root";
-$password = "12345678";
+$password = "rootroot";
 $dbname = "concesionario";
 
 // Conexión a la base de datos
@@ -23,7 +23,7 @@ $alquilado_texto = $_REQUEST['alquilado'];
 $alquilado = ($alquilado_texto === "Si") ? 1 : 0;
 
 // Directorio donde se guardarán las imágenes
-$target_dir = "C:/AppServ/www/php/php/img/";
+$target_dir = "C:/AppServ/www/Concesionario/img/";
 
 // Verificar si se envió un archivo
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['image'])) {

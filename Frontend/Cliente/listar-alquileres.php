@@ -236,7 +236,7 @@ button:hover {
             <?php 
             if (isset($_SESSION['name'])) {
                 // Conexión a la base de datos
-                $conexion = new mysqli("localhost", "root", "12345678", "concesionario");
+                $conexion = new mysqli("localhost", "root", "rootroot", "concesionario");
 
                 // Verificar conexión
                 if ($conexion->connect_error) {
@@ -292,7 +292,7 @@ button:hover {
     <?php
     $servername = "localhost";
     $username = "root";
-    $password = "12345678";
+    $password = "rootroot";
     $dbname = "concesionario";
 
     // Conectar a la base de datos
@@ -304,13 +304,13 @@ button:hover {
     }
 	$nombroi = $_SESSION['name'];
     // Consulta SQL
-    $sql = "select usuarios.nombre, modelo, marca, color, precio, foto from alquileres, usuarios, coches where alquileres.id_usuario=usuarios.id_usuario and alquileres.id_coche=coches.id_coche and usuarios.nombre = '$nombroi'";
+    $sql = "select usuarios.nombre, modelo, marca, color, precio, foto, prestado, devuelto from alquileres, usuarios, coches where alquileres.id_usuario=usuarios.id_usuario and alquileres.id_coche=coches.id_coche and usuarios.nombre = '$nombroi'";
     $result = mysqli_query($conn, $sql);
 
     // Verificar si hay resultados
     if (mysqli_num_rows($result) > 0) {
         echo "<table>";
-        echo "<tr><th>Usuario</th><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Foto</th></tr>";
+        echo "<tr><th>Usuario</th><th>Modelo</th><th>Marca</th><th>Color</th><th>Precio</th><th>Foto</th><th>Inicio</th><th>Fin</th></tr>";
 
         while ($row = mysqli_fetch_assoc($result)) {
             echo "<tr>";
@@ -320,7 +320,9 @@ button:hover {
             echo "<td>" . htmlspecialchars($row['color']) . "</td>";
             echo "<td>" . htmlspecialchars($row['precio']) . "</td>";
             echo "<td><img src='../../" . htmlspecialchars($row['foto']) . "' alt='Foto' width='100'></td>";
-            echo "</tr>";
+            echo "<td>" . htmlspecialchars($row['prestado']) . "</td>";
+			echo "<td>" . htmlspecialchars($row['devuelto']) . "</td>";
+			echo "</tr>";
         }
 
         echo "</table>";

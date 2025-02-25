@@ -3,7 +3,7 @@ session_start(); // Iniciar sesión
 
 $servername = "localhost";
 $username = "root";
-$password = "12345678";
+$password = "rootroot";
 $dbname = "concesionario";
 
 // Conectar a la base de datos
