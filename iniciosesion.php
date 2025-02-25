@@ -1,6 +1,6 @@
 <?php
 session_start();
-$conn = mysqli_connect('localhost', 'root', '12345678', 'concesionario');
+$conn = mysqli_connect('localhost', 'root', 'rootroot', 'concesionario');
 
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
